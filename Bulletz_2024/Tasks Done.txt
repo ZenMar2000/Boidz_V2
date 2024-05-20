@@ -1,0 +1,12 @@
+﻿Mandatory:
+Create boids that follows the 3 requirements
+- Alignment
+- Cohesion
+- Separation
+
+- Right click for spawning a single boid
+
+Extra:
+- Space key: Boid speed boosted based on how big the flock is
+- R key: Clear window from all boids
+- Mouse Left click: turbo spawn of many boids

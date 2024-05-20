@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Aiv.Fast2D;
@@ -28,7 +29,7 @@ namespace Boidz
 
         public static void Init()
         {
-            Window = new Window(1280, 720, "Boids");
+            Window = new Window(1920, 1080, "Boids");
 
             // SCENES
             //TitleScene titleScene = new TitleScene("titleScreen");
@@ -72,29 +73,7 @@ namespace Boidz
                 //    return;
 
                 //// INPUT
-                //if (Window.GetKey(KeyCode.Esc))
-                //{
-                //    return;
-                //}
-
-                //Player.Input();
-
-                //// UPDATE
-                //PhysicsMngr.Update();
-                //UpdateMngr.Update();
-                //SpawnMngr.Update();
-                //PowerUpsMngr.Update();
-
-                //// COLLISIONS
-                //PhysicsMngr.CheckCollisions();
-
-                //// DRAW
-                //DrawMngr.Draw();
-                //DebugMngr.Draw();
-
-                // Show FPS on Window Title Bar
-                //Window.SetTitle($"FPS: {1f / Window.DeltaTime}");
-
+              
                 // Exit when ESC is pressed
                 if (Window.GetKey(KeyCode.Esc))
                 {
@@ -127,6 +106,7 @@ namespace Boidz
 
                 Window.Update();
             }
+
         }
     }
 }

@@ -5,26 +5,12 @@ namespace Boidz
 {
     class Boid : Actor
     {
-        #region variables
-        private float turnRatio = 0.1f;
-
-        private int checkRange = 75;
-        private float minDistance = 40;
-
-        private float alignmentRatio = 0.0275f;
-        private float cohesionRatio = 0.012f;
-        private float separationRatio = 0.0475f;
-        private float separationMultiplier = 2;
-        #endregion
-
-        #region properties
-
-        #endregion
-
+        private float speedMultiplier = 1;
+        private float ratioMultiplier = 1;
         public Boid() : base("boid")
         {
             IsActive = true;
-            speed = 0.35f;
+            speed = ((PlayScene)Game.CurrentScene).Speed;
 
             SetRandomDirection();
 
@@ -91,7 +77,7 @@ namespace Boidz
 
             foreach (Boid b in ((PlayScene)Game.CurrentScene).boids)
             {
-                if (Vector2.Distance(Position, b.Position) <= checkRange && b != this)
+                if (Vector2.Distance(Position, b.Position) <= ((PlayScene)Game.CurrentScene).CheckRange && b != this)
                 {
                     neigbours.Add(b);
                 }
@@ -99,11 +85,22 @@ namespace Boidz
 
             if (neigbours.Count > 0)
             {
+                if (((PlayScene)Game.CurrentScene).SpeedMultiplierEnabled && neigbours.Count > 0)
+                {
+                    speedMultiplier = 1 + ((PlayScene)Game.CurrentScene).SpeedMultiplier * neigbours.Count * 0.25f;
+                    ratioMultiplier = 1 + ((PlayScene)Game.CurrentScene).SpeedMultiplier * neigbours.Count * 0.75f;
+                }
+                else
+                {
+                    speedMultiplier = 1;
+                    ratioMultiplier = 1;
+                }
+
                 AlignmentLogic(ref newDir, neigbours);
                 CohesionLogic(ref newDir, neigbours);
                 SeparationLogic(ref newDir, neigbours);
 
-                RigidBody.Velocity = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, turnRatio)) * speed;
+                RigidBody.Velocity = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, ((PlayScene)Game.CurrentScene).TurnRatio)) * (speed * (speedMultiplier));
             }
         }
 
@@ -118,7 +115,7 @@ namespace Boidz
                 }
             }
 
-            newDir = Vector2.Lerp(newDir, dir.Normalized() * speed, alignmentRatio);
+            newDir = Vector2.Lerp(newDir, dir.Normalized() * speed, ((PlayScene)Game.CurrentScene).AlignmentRatio * ratioMultiplier);
 
         }
 
@@ -135,51 +132,37 @@ namespace Boidz
             groupCenter.Y /= neigbours.Count;
 
             Vector2 currentPosToCenter = groupCenter - Position;
-            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * speed, cohesionRatio);
+            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * speed, ((PlayScene)Game.CurrentScene).CohesionRatio * ratioMultiplier);
         }
 
         private void SeparationLogic(ref Vector2 newDir, List<Boid> neigbours)
         {
+            //TODO Pick only the closest one
             bool found = false;
             Vector2 escapeDirection = newDir;
+
+            Boid closestBoid = null;
+            float closestDistance = Game.Window.Width + HalfWidth * 2;
+
             foreach (Boid b in neigbours)
             {
-                if (Vector2.Distance(b.Position, Position) <= minDistance)
+                float dist = Vector2.Distance(b.Position, Position);
+                if (dist <= ((PlayScene)Game.CurrentScene).MinDistance && dist < closestDistance)
                 {
                     found = true;
-                    float distPercent = 1 - ((minDistance - Vector2.Distance(b.Position, Position)) / minDistance);
-
-                    escapeDirection -= (Position - b.Position) * distPercent * separationMultiplier;
+                    closestBoid = b;
+                    closestDistance = dist;
                 }
             }
 
             if (found)
             {
+                float distPercent = 1 - ((((PlayScene)Game.CurrentScene).MinDistance - Vector2.Distance(closestBoid.Position, Position)) / ((PlayScene)Game.CurrentScene).MinDistance);
+                escapeDirection -= (Position - closestBoid.Position) * distPercent * ((PlayScene)Game.CurrentScene).SeparationMultiplier;
+
                 escapeDirection = escapeDirection.Normalized() * speed;
-                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection.Normalized() * speed), separationRatio).Normalized();
+                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection.Normalized() * speed), ((PlayScene)Game.CurrentScene).SeparationRatio * (ratioMultiplier * 0.65f)).Normalized();
             }
         }
-
     }
-
-    //struct FuzzyLogic
-    //{
-    //    private double distanceFL;
-    //    private double infectionTimerFL;
-    //    private double directionAffinityFL;
-
-    //    public int index;
-    //    public double result;
-    //    public FuzzyLogic(Ball currentBall, Ball targetBall, int index)
-    //    {
-    //        Vector2 dist = targetBall.Position - currentBall.Position;
-
-    //        distanceFL = 1 - (dist.LengthSquared / currentBall.InfectionRadius);
-    //        infectionTimerFL = 1 - targetBall.GetInfectionTimer();
-    //        directionAffinityFL = (Math.Cos(currentBall.RigidBody.Velocity.X) - Math.Cos(targetBall.RigidBody.Velocity.X)) - 1;
-
-    //        result = distanceFL + infectionTimerFL + directionAffinityFL;
-    //        this.index = index;
-    //    }
-    //}
 }

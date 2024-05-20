@@ -99,6 +99,7 @@
     <Content Include="Assets\Levels\earth.png" />
     <Content Include="Assets\Levels\earthGrass.png" />
     <Content Include="Assets\Levels\stone.png" />
+    <Content Include="Tasks Done.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

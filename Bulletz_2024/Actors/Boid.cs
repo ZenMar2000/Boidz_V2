@@ -14,8 +14,8 @@ namespace Boidz
 
         private float AlignmentRatio = 0.03f;
         private float CohesionRatio = 0.025f;
-        private float SeparationRatio = 0.065f;
-        private float SeparationMultiplier = 1.25f;
+        private float SeparationRatio = 0.07f;
+        private float SeparationMultiplier = 1.3f;
 
         private float baseSpeed = 0.4f;
         private float targetSpeed;
@@ -180,7 +180,7 @@ namespace Boidz
                 escapeDirection -= (Position - closestBoid.Position) * distPercent * SeparationMultiplier;
 
                 escapeDirection = escapeDirection.Normalized() * currentSpeed;
-                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection), SeparationRatio * (ratioMultiplier * 0.675f)).Normalized();
+                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection), SeparationRatio * (ratioMultiplier * 0.7f)).Normalized();
             }
         }
     }

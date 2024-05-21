@@ -7,29 +7,36 @@ namespace Boidz
     class Boid : Actor
     {
 
+        private float smoothness = 0.775f; // 1 = original(no lerp over lerp); 0 = broken (ignore everything)
         private float TurnRatio = 0.1f;
 
         private int CheckRange = 75;
         private float MinDistance = 27.5f;
 
         private float AlignmentRatio = 0.03f;
-        private float CohesionRatio = 0.0225f;
+        private float CohesionRatio = 0.023f;
         private float SeparationRatio = 0.065f;
         private float SeparationMultiplier = 1.25f;
 
         private float baseSpeed = 0.4f;
-        private float targetSpeed;
+        private Vector2 targetSpeed;
         private float SpeedMultiplierIncrement = 0.2f;
 
         private float speedMultiplier = 1;
         private float ratioMultiplier = 1;
 
+        private float alignmentMultiplier = 1;
+        private float cohesionMultiplier = 1;
+        private float separationMultiplier = 1;
+
+
+
         public Boid() : base("boid")
         {
             IsActive = true;
             currentSpeed = baseSpeed;
-            targetSpeed = baseSpeed;
-            SetRandomDirection();
+            SetStartingDirectionAndSpeed();
+            targetSpeed = RigidBody.Velocity;
 
             Reset();
 
@@ -37,7 +44,7 @@ namespace Boidz
             DrawMngr.AddItem(this);
         }
 
-        private void SetRandomDirection()
+        private void SetStartingDirectionAndSpeed()
         {
             float x;
             float y;
@@ -105,21 +112,32 @@ namespace Boidz
                 if (((PlayScene)Game.CurrentScene).SpeedMultiplierEnabled && neigbours.Count > 0)
                 {
                     speedMultiplier = 1 + SpeedMultiplierIncrement * neigbours.Count * 0.25f;
-                    ratioMultiplier = 1 + SpeedMultiplierIncrement * neigbours.Count * 0.8f;
+                    ratioMultiplier = 1 + SpeedMultiplierIncrement * neigbours.Count;
+
+                    alignmentMultiplier = ratioMultiplier * 0.6f;
+                    cohesionMultiplier = ratioMultiplier * 0.35f;
+                    separationMultiplier = ratioMultiplier * 0.175f;
+                    CheckRange = 90;
                 }
                 else
                 {
                     speedMultiplier = 1;
                     ratioMultiplier = 1;
+
+                    alignmentMultiplier = 1;
+                    cohesionMultiplier = 1;
+                    separationMultiplier = 1;
+
+
+                    CheckRange = 75;
                 }
 
                 AlignmentLogic(ref newDir, neigbours);
                 CohesionLogic(ref newDir, neigbours);
                 SeparationLogic(ref newDir, neigbours);
 
-                //targetSpeed = 
-
-                RigidBody.Velocity = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, TurnRatio)) * (currentSpeed * (speedMultiplier));
+                targetSpeed = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, TurnRatio)) * (currentSpeed * (speedMultiplier));
+                RigidBody.Velocity = Vector2.Lerp(RigidBody.Velocity, targetSpeed, smoothness);
             }
         }
 
@@ -134,7 +152,7 @@ namespace Boidz
                 }
             }
 
-            newDir = Vector2.Lerp(newDir, dir.Normalized() * currentSpeed, AlignmentRatio * ratioMultiplier);
+            newDir = Vector2.Lerp(newDir, dir.Normalized() * currentSpeed, AlignmentRatio * alignmentMultiplier);
 
         }
 
@@ -151,7 +169,7 @@ namespace Boidz
             groupCenter.Y /= neigbours.Count;
 
             Vector2 currentPosToCenter = groupCenter - Position;
-            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * currentSpeed, CohesionRatio * ratioMultiplier);
+            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * currentSpeed, CohesionRatio * cohesionMultiplier);
         }
 
         private void SeparationLogic(ref Vector2 newDir, List<Boid> neigbours)
@@ -179,7 +197,7 @@ namespace Boidz
                 escapeDirection -= (Position - closestBoid.Position) * distPercent * SeparationMultiplier;
 
                 escapeDirection = escapeDirection.Normalized() * currentSpeed;
-                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection), SeparationRatio * (ratioMultiplier * 0.675f)).Normalized();
+                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection), SeparationRatio * (separationMultiplier)).Normalized();
             }
         }
     }

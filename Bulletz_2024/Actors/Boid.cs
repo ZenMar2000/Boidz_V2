@@ -13,7 +13,7 @@ namespace Boidz
         private float MinDistance = 27.5f;
 
         private float AlignmentRatio = 0.03f;
-        private float CohesionRatio = 0.0225f;
+        private float CohesionRatio = 0.025f;
         private float SeparationRatio = 0.065f;
         private float SeparationMultiplier = 1.25f;
 
@@ -128,10 +128,7 @@ namespace Boidz
             Vector2 dir = newDir;
             foreach (Boid b in neigbours)
             {
-                if (b != this)
-                {
-                    dir += b.RigidBody.Velocity;
-                }
+                dir += b.RigidBody.Velocity;
             }
 
             newDir = Vector2.Lerp(newDir, dir.Normalized() * currentSpeed, AlignmentRatio * ratioMultiplier);
@@ -147,8 +144,11 @@ namespace Boidz
                 groupCenter.Y += b.Position.Y;
             }
 
-            groupCenter.X /= neigbours.Count;
-            groupCenter.Y /= neigbours.Count;
+            //groupCenter.X += RigidBody.Position.X;
+            //groupCenter.Y += RigidBody.Position.Y;
+
+            groupCenter.X /= neigbours.Count/* + 1*/;
+            groupCenter.Y /= neigbours.Count /*+ 1*/;
 
             Vector2 currentPosToCenter = groupCenter - Position;
             newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * currentSpeed, CohesionRatio * ratioMultiplier);
@@ -164,6 +164,7 @@ namespace Boidz
 
             foreach (Boid b in neigbours)
             {
+
                 float dist = Vector2.Distance(b.Position, Position);
                 if (dist <= MinDistance && dist < closestDistance)
                 {

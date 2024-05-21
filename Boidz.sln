@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletz_2024", "Bulletz_2024\Bulletz_2024.csproj", "{6AB15694-3958-4FF8-8231-A250EB27F528}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boidz", "Bulletz_2024\Boidz.csproj", "{6AB15694-3958-4FF8-8231-A250EB27F528}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

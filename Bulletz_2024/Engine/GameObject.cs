@@ -16,7 +16,7 @@ namespace Boidz
         public RigidBody RigidBody;
         public bool IsActive;
 
-        protected float speed;
+        protected float currentSpeed;
         //protected Vector2 velocity;
 
         public virtual Vector2 Position { get { return sprite.position; } set { sprite.position = value; } }

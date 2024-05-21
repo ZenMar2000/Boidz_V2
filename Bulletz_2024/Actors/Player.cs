@@ -25,7 +25,7 @@ namespace Boidz
         public Player(Controller ctrl, int id=0) : base("boid")
         {
             IsActive = true;
-            speed = 350.0f;
+            currentSpeed = 350.0f;
             //bulletType = BulletType.PlayerBullet;
 
             RigidBody.Collider = ColliderFactory.CreateBoxFor(this);
@@ -81,7 +81,7 @@ namespace Boidz
             //    direction.Normalize();
             //}
 
-            //RigidBody.Velocity = direction * speed;
+            //RigidBody.Velocity = direction * currentSpeed;
 
             //if (controller.IsFirePressed())
             //{

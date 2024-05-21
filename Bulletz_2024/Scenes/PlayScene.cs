@@ -20,19 +20,22 @@ namespace Boidz
         #region vars
         public List<Boid> boids;
 
-        public float Speed = 0.4f;
-        public float TurnRatio = 0.1f;
+        //public float Speed = ;
+        //public float TurnRatio = 0.1f;
 
-        public int CheckRange = 75;
-        public float MinDistance = 30f;
+        //public int CheckRange = 75;
+        //public float MinDistance = 27.5f;
 
-        public float AlignmentRatio = 0.025f;
-        public float CohesionRatio = 0.025f;
-        public float SeparationRatio = 0.05f;
-        public float SeparationMultiplier = 1.25f;
+        //public float AlignmentRatio = 0.03f;
+        //public float CohesionRatio = 0.0225f;
+        //public float SeparationRatio = 0.065f;
+        //public float SeparationMultiplier = 1.25f;
 
         public bool SpeedMultiplierEnabled = false;
-        public float SpeedMultiplier = 0.2f;
+        //public float SpeedMultiplierIncrement = 0.2f;
+
+        //private float speedMultiplier = 1;
+        //private float ratioMultiplier = 1;
         #endregion
 
         public override void Start()
@@ -100,7 +103,7 @@ namespace Boidz
                     clickedSpace = true;
                     SpeedMultiplierEnabled = !SpeedMultiplierEnabled;
                     Console.Clear();
-                    Console.WriteLine("Flocking speed multiplier: " + SpeedMultiplierEnabled);
+                    Console.WriteLine("Flocking currentSpeed multiplier: " + SpeedMultiplierEnabled);
                 }
             }
             else if (clickedSpace)

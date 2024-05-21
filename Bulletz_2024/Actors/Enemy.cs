@@ -26,8 +26,8 @@ namespace Boidz
 
     //        sprite.FlipX = true;
 
-    //        speed = -200;
-    //        RigidBody.Velocity.X = speed;
+    //        currentSpeed = -200;
+    //        RigidBody.Velocity.X = currentSpeed;
 
     //        nextShoot = RandomGenerator.GetRandomInt(1, 2);
 

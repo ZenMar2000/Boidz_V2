@@ -3,15 +3,32 @@ using System.Collections.Generic;
 
 namespace Boidz
 {
+
     class Boid : Actor
     {
+
+        private float TurnRatio = 0.1f;
+
+        private int CheckRange = 75;
+        private float MinDistance = 27.5f;
+
+        private float AlignmentRatio = 0.03f;
+        private float CohesionRatio = 0.0225f;
+        private float SeparationRatio = 0.065f;
+        private float SeparationMultiplier = 1.25f;
+
+        private float baseSpeed = 0.4f;
+        private float targetSpeed;
+        private float SpeedMultiplierIncrement = 0.2f;
+
         private float speedMultiplier = 1;
         private float ratioMultiplier = 1;
+
         public Boid() : base("boid")
         {
             IsActive = true;
-            speed = ((PlayScene)Game.CurrentScene).Speed;
-
+            currentSpeed = baseSpeed;
+            targetSpeed = baseSpeed;
             SetRandomDirection();
 
             Reset();
@@ -33,7 +50,7 @@ namespace Boidz
             RigidBody.Velocity = new Vector2(x, y);
 
             RigidBody.Velocity.Normalize();
-            RigidBody.Velocity *= speed;
+            RigidBody.Velocity *= currentSpeed;
         }
 
         public override void Update()
@@ -77,7 +94,7 @@ namespace Boidz
 
             foreach (Boid b in ((PlayScene)Game.CurrentScene).boids)
             {
-                if (Vector2.Distance(Position, b.Position) <= ((PlayScene)Game.CurrentScene).CheckRange && b != this)
+                if (Vector2.Distance(Position, b.Position) <= CheckRange && b != this)
                 {
                     neigbours.Add(b);
                 }
@@ -87,8 +104,8 @@ namespace Boidz
             {
                 if (((PlayScene)Game.CurrentScene).SpeedMultiplierEnabled && neigbours.Count > 0)
                 {
-                    speedMultiplier = 1 + ((PlayScene)Game.CurrentScene).SpeedMultiplier * neigbours.Count * 0.25f;
-                    ratioMultiplier = 1 + ((PlayScene)Game.CurrentScene).SpeedMultiplier * neigbours.Count * 0.75f;
+                    speedMultiplier = 1 + SpeedMultiplierIncrement * neigbours.Count * 0.25f;
+                    ratioMultiplier = 1 + SpeedMultiplierIncrement * neigbours.Count * 0.8f;
                 }
                 else
                 {
@@ -100,7 +117,9 @@ namespace Boidz
                 CohesionLogic(ref newDir, neigbours);
                 SeparationLogic(ref newDir, neigbours);
 
-                RigidBody.Velocity = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, ((PlayScene)Game.CurrentScene).TurnRatio)) * (speed * (speedMultiplier));
+                //targetSpeed = 
+
+                RigidBody.Velocity = Vector2.Normalize(Vector2.Lerp(RigidBody.Velocity, newDir, TurnRatio)) * (currentSpeed * (speedMultiplier));
             }
         }
 
@@ -115,7 +134,7 @@ namespace Boidz
                 }
             }
 
-            newDir = Vector2.Lerp(newDir, dir.Normalized() * speed, ((PlayScene)Game.CurrentScene).AlignmentRatio * ratioMultiplier);
+            newDir = Vector2.Lerp(newDir, dir.Normalized() * currentSpeed, AlignmentRatio * ratioMultiplier);
 
         }
 
@@ -132,12 +151,11 @@ namespace Boidz
             groupCenter.Y /= neigbours.Count;
 
             Vector2 currentPosToCenter = groupCenter - Position;
-            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * speed, ((PlayScene)Game.CurrentScene).CohesionRatio * ratioMultiplier);
+            newDir = Vector2.Lerp(newDir, currentPosToCenter.Normalized() * currentSpeed, CohesionRatio * ratioMultiplier);
         }
 
         private void SeparationLogic(ref Vector2 newDir, List<Boid> neigbours)
         {
-            //TODO Pick only the closest one
             bool found = false;
             Vector2 escapeDirection = newDir;
 
@@ -147,7 +165,7 @@ namespace Boidz
             foreach (Boid b in neigbours)
             {
                 float dist = Vector2.Distance(b.Position, Position);
-                if (dist <= ((PlayScene)Game.CurrentScene).MinDistance && dist < closestDistance)
+                if (dist <= MinDistance && dist < closestDistance)
                 {
                     found = true;
                     closestBoid = b;
@@ -157,11 +175,11 @@ namespace Boidz
 
             if (found)
             {
-                float distPercent = 1 - ((((PlayScene)Game.CurrentScene).MinDistance - Vector2.Distance(closestBoid.Position, Position)) / ((PlayScene)Game.CurrentScene).MinDistance);
-                escapeDirection -= (Position - closestBoid.Position) * distPercent * ((PlayScene)Game.CurrentScene).SeparationMultiplier;
+                float distPercent = 1 - ((MinDistance - Vector2.Distance(closestBoid.Position, Position)) / MinDistance);
+                escapeDirection -= (Position - closestBoid.Position) * distPercent * SeparationMultiplier;
 
-                escapeDirection = escapeDirection.Normalized() * speed;
-                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection.Normalized() * speed), ((PlayScene)Game.CurrentScene).SeparationRatio * (ratioMultiplier * 0.65f)).Normalized();
+                escapeDirection = escapeDirection.Normalized() * currentSpeed;
+                newDir = Vector2.Lerp(newDir, newDir - (escapeDirection), SeparationRatio * (ratioMultiplier * 0.675f)).Normalized();
             }
         }
     }

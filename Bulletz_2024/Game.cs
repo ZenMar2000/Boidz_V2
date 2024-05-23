@@ -29,7 +29,7 @@ namespace Boidz
 
         public static void Init()
         {
-            Window = new Window(1920, 1080, "Boids");
+            Window = new Window(1920, 1080, "Boids amount: ");
 
             // SCENES
             //TitleScene titleScene = new TitleScene("titleScreen");

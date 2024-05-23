@@ -15,27 +15,13 @@ namespace Boidz
         #region private vars
         private bool clickedL = false;
         private bool clickedSpace = false;
+        private bool clickedShiftL = false;
         #endregion
 
         #region vars
         public List<Boid> boids;
 
-        //public float Speed = ;
-        //public float TurnRatio = 0.1f;
-
-        //public int CheckRange = 75;
-        //public float MinDistance = 27.5f;
-
-        //public float AlignmentRatio = 0.03f;
-        //public float CohesionRatio = 0.0225f;
-        //public float SeparationRatio = 0.065f;
-        //public float SeparationMultiplier = 1.25f;
-
         public bool SpeedMultiplierEnabled = false;
-        //public float SpeedMultiplierIncrement = 0.2f;
-
-        //private float speedMultiplier = 1;
-        //private float ratioMultiplier = 1;
         #endregion
 
         public override void Start()
@@ -43,13 +29,13 @@ namespace Boidz
             boids = new List<Boid>();
             LoadAssets();
 
-            for (int i = 0; i < 150; i++)
-            {
-                boids.Add(new Boid());
-                float rX = RandomGenerator.GetRandomFloat(1, Game.Window.Width - 1);
-                float rY = RandomGenerator.GetRandomFloat(1, Game.Window.Height - 1);
-                boids.Last().Position = new Vector2(rX, rY);
-            }
+            //for (int i = 0; i < 150; i++)
+            //{
+            //    boids.Add(new Boid());
+            //    float rX = RandomGenerator.GetRandomFloat(1, Game.Window.Width - 1);
+            //    float rY = RandomGenerator.GetRandomFloat(1, Game.Window.Height - 1);
+            //    boids.Last().Position = new Vector2(rX, rY);
+            //}
 
             base.Start();
         }
@@ -84,10 +70,14 @@ namespace Boidz
                 if (!clickedL)
                 {
                     clickedL = true;
-                    boids.Add(new Boid());
-                    float rX = Game.Window.MouseX;
-                    float rY = Game.Window.MouseY;
-                    boids.Last().Position = new Vector2(rX, rY);
+                    if (!clickedShiftL)
+                    {
+
+                        boids.Add(new Boid());
+                        float rX = Game.Window.MouseX;
+                        float rY = Game.Window.MouseY;
+                        boids.Last().Position = new Vector2(rX, rY);
+                    }
                 }
 
             }
@@ -110,11 +100,24 @@ namespace Boidz
             {
                 clickedSpace = false;
             }
+
+            if (Game.Window.GetKey(Aiv.Fast2D.KeyCode.ShiftLeft))
+            {
+                if (!clickedShiftL)
+                {
+                    clickedShiftL = true;
+                }
+            }
+            else if (clickedShiftL)
+            {
+                clickedShiftL = false;
+            }
         }
 
         public override void Update()
         {
             UpdateMngr.Update();
+            Game.Window.SetTitle("Boids amount: " + boids.Count());
         }
 
         public override Scene OnExit()

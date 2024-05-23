@@ -9,8 +9,8 @@ namespace Boidz
 
         private float TurnRatio = 0.1f;
 
-        private int CheckRange = 75;
-        private float MinDistance = 27.5f;
+        private int CheckRange = 70;
+        private float MinDistance = 25f;
 
         private float AlignmentRatio = 0.03f;
         private float CohesionRatio = 0.025f;
